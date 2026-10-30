@@ -25,3 +25,4 @@ Keep this list current so a merge from upstream knows what to preserve.
 |---|---|---|
 | 2026-10-30 | Marketplace renamed to `edvantage-okf`, owner Edvantage (plugin author unchanged) | `.claude-plugin/marketplace.json` |
 | 2026-10-30 | This file | `FORK.md` |
+| 2026-10-30 | `--migrate` keeps plain-text citations as `sources` and leaves prose ("Related: ...") in the body under `# Related`; upstream kept only Markdown links and deleted the rest of the section | `skills/validate/scripts/okf_validate.py`, `tests/test_okf_validate.py` |

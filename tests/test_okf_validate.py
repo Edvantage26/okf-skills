@@ -452,6 +452,34 @@ class TestMigrate(TmpBundle):
             self.assertIn(f'resource: "{url}"', out)
         self.assertNotIn("# Citations", out)
 
+    def test_plain_text_citations_are_kept_as_sources(self):
+        # A section mixing a link with file paths used to keep only the link and
+        # delete the paths along with the section.
+        self.write("c.md", LEGACY_CONCEPT.replace(
+            "[1] [Auth README](https://github.com/acme/auth#readme)\n",
+            "- [Auth README](https://github.com/acme/auth#readme)\n"
+            "- `src/auth/token.py`, `src/auth/keys.py`.\n"
+            "- `docs/AUTH.md` (spec,\n  not OKF).\n"))
+        migrate(self.bundle)
+        out = (self.bundle / "c.md").read_text(encoding="utf-8")
+        self.assertIn('resource: "https://github.com/acme/auth#readme"', out)
+        self.assertIn('  - resource: "src/auth/token.py"\n'
+                      '    title: "src/auth/token.py, src/auth/keys.py."\n', out)
+        self.assertIn('  - resource: "docs/AUTH.md"\n'
+                      '    title: "docs/AUTH.md (spec, not OKF)."\n', out)
+        self.assertNotIn("# Citations", out)
+
+    def test_prose_in_the_citations_section_stays_in_the_body(self):
+        self.write("c.md", LEGACY_CONCEPT.replace(
+            "[1] [Auth README](https://github.com/acme/auth#readme)\n",
+            "- `src/auth/token.py`.\n\nRelated: [billing](/billing.md), [users](/users.md).\n"))
+        migrate(self.bundle)
+        out = (self.bundle / "c.md").read_text(encoding="utf-8")
+        self.assertIn('resource: "src/auth/token.py"', out)
+        self.assertIn("# Related\n\nRelated: [billing](/billing.md), [users](/users.md).", out)
+        self.assertNotIn('resource: "/billing.md"', out)
+        self.assertIn("# Endpoints", out)
+
     def test_root_index_version_is_bumped(self):
         self.legacy()
         self.assertIn('okf_version: "0.2"',

@@ -435,15 +435,68 @@ def citations_to_sources(raw: str, body: str) -> tuple[str, str]:
     rest = body[heading.end():]
     nxt = HEADING.search(rest)
     section, tail = (rest[:nxt.start()], rest[nxt.start():]) if nxt else (rest, "")
-    entries = MD_LINK.findall(section)
-    if not entries:
+    citation_entries, kept_prose = split_citation_section(section)
+    sources_found = []
+    for citation_entry in citation_entries:
+        entry_links = MD_LINK.findall(citation_entry)
+        if entry_links:
+            sources_found.extend((title, url) for title, url in entry_links)
+        else:
+            # A plain-text citation (a file path, a document name) is still a source:
+            # dropping it would delete provenance the v0.1 author wrote down.
+            backtick_path = re.search(r"`([^`]+)`", citation_entry)
+            resource = backtick_path.group(1) if backtick_path else citation_entry
+            sources_found.append((citation_entry.replace("`", ""), resource))
+    if not sources_found:
         return raw, body  # nothing extractable — leave it and keep warning
     # json.dumps gives a correctly escaped YAML double-quoted scalar for free.
     block = "sources:\n" + "".join(
-        f"  - resource: {json.dumps(url)}\n    title: {json.dumps(title)}\n"
-        for title, url in entries)
+        f"  - resource: {json.dumps(url, ensure_ascii=False)}\n"
+        f"    title: {json.dumps(title, ensure_ascii=False)}\n"
+        for title, url in sources_found)
     kept = body[:heading.start()].rstrip("\n")
+    if kept_prose:
+        # Prose inside the section (e.g. a "Related: [a](a.md)" line) is not a citation;
+        # it keeps its links in the body under its own heading.
+        kept += "\n\n# Related\n\n" + "\n\n".join(kept_prose)
     return raw + block, kept + ("\n\n" + tail if tail else "\n")
+
+
+CITATION_MARKER = re.compile(r"^\s*(?:[-*+]|\[\d+\]|\d+[.)])\s+")
+
+
+def split_citation_section(section: str) -> tuple[list[str], list[str]]:
+    """Split a `# Citations` section into citation entries and leftover prose.
+
+    An entry starts at a list marker (`-`, `*`, `+`, `[1]`, `1.`) and runs over its
+    continuation lines; a paragraph that is not a list is prose and stays in the body.
+    """
+    citation_entries: list[str] = []
+    kept_prose: list[str] = []
+    current_entry: list[str] | None = None
+    current_prose: list[str] = []
+    for line in section.splitlines():
+        if not line.strip():
+            if current_entry is not None:
+                citation_entries.append(" ".join(current_entry))
+                current_entry = None
+            if current_prose:
+                kept_prose.append("\n".join(current_prose))
+                current_prose = []
+            continue
+        if CITATION_MARKER.match(line):
+            if current_entry is not None:
+                citation_entries.append(" ".join(current_entry))
+            current_entry = [CITATION_MARKER.sub("", line, count=1).strip()]
+        elif current_entry is not None:
+            current_entry.append(line.strip())
+        else:
+            current_prose.append(line)
+    if current_entry is not None:
+        citation_entries.append(" ".join(current_entry))
+    if current_prose:
+        kept_prose.append("\n".join(current_prose))
+    return citation_entries, kept_prose
 
 
 def migrate_text(text: str, is_root_index: bool) -> str | None:
