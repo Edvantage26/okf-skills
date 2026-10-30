@@ -1,10 +1,10 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
-  "name": "scaccogatto",
-  "description": "Claude Code plugins by scaccogatto.",
+  "name": "edvantage-okf",
+  "description": "Edvantage fork of the OKF toolkit for Claude Code (upstream: scaccogatto/okf-skills).",
   "owner": {
-    "name": "Marco Boffo",
-    "email": "chat@marcoboffo.me"
+    "name": "Edvantage",
+    "url": "https://github.com/Edvantage26"
   },
   "plugins": [
     {
@@ -12,7 +12,12 @@
       "source": "./",
       "description": "Author, maintain, backfill, validate, visualize and serve (MCP) Open Knowledge Format (OKF) bundles.",
       "category": "documentation",
-      "keywords": ["okf", "knowledge", "markdown", "agents"],
+      "keywords": [
+        "okf",
+        "knowledge",
+        "markdown",
+        "agents"
+      ],
       "license": "MIT"
     }
   ]
