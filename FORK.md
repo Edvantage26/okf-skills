@@ -17,6 +17,12 @@ specification is (c) Google LLC under Apache 2.0.
 - `upstream`: the original, fetch only. Bring changes in with `git fetch upstream` and a merge or
   cherry-pick, reviewed like any other change.
 
+## Versioning
+
+`plugin.json` carries the upstream version plus `-edv.<n>`, e.g. `0.12.0-edv.1`. Bump `<n>` on every
+fork change so installed plugins pick it up with `claude plugin update okf@edvantage-okf`; after a
+merge from upstream, restart at `<new upstream version>-edv.1`.
+
 ## Fork changes
 
 Keep this list current so a merge from upstream knows what to preserve.
@@ -26,3 +32,4 @@ Keep this list current so a merge from upstream knows what to preserve.
 | 2026-10-30 | Marketplace renamed to `edvantage-okf`, owner Edvantage (plugin author unchanged) | `.claude-plugin/marketplace.json` |
 | 2026-10-30 | This file | `FORK.md` |
 | 2026-10-30 | `--migrate` keeps plain-text citations as `sources` and leaves prose ("Related: ...") in the body under `# Related`; upstream kept only Markdown links and deleted the rest of the section | `skills/validate/scripts/okf_validate.py`, `tests/test_okf_validate.py` |
+| 2026-10-30 | Version `0.12.0-edv.1` (fork versioning scheme) | `.claude-plugin/plugin.json` |
