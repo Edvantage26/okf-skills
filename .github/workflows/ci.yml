@@ -27,7 +27,7 @@ jobs:
         uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
 
       - name: Validate plugin & marketplace manifests
-        run: jq empty .claude-plugin/plugin.json .claude-plugin/marketplace.json .mcp.json
+        run: jq empty .claude-plugin/plugin.json .claude-plugin/marketplace.json servers/mcp.json
 
       # Pinned so a ruff release that widens its default rule set is a reviewed
       # bump here, not a red main. Keep in step with the Makefile's RUFF.

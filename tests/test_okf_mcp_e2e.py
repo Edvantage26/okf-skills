@@ -32,7 +32,7 @@ TIMEOUT = 180  # uv may resolve and build the environment on the first run
 
 def server_params() -> StdioServerParameters:
     """The shipped `.mcp.json` entry, resolved into something spawnable."""
-    config = json.loads((ROOT / ".mcp.json").read_text(encoding="utf-8"))
+    config = json.loads((ROOT / "servers" / "mcp.json").read_text(encoding="utf-8"))
     servers = config["mcpServers"]
     assert list(servers) == ["bundle"], f"unexpected servers in .mcp.json: {list(servers)}"
     entry = servers["bundle"]

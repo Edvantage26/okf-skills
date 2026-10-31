@@ -33,3 +33,5 @@ Keep this list current so a merge from upstream knows what to preserve.
 | 2026-10-30 | This file | `FORK.md` |
 | 2026-10-30 | `--migrate` keeps plain-text citations as `sources` and leaves prose ("Related: ...") in the body under `# Related`; upstream kept only Markdown links and deleted the rest of the section | `skills/validate/scripts/okf_validate.py`, `tests/test_okf_validate.py` |
 | 2026-10-30 | Version `0.12.0-edv.1` (fork versioning scheme) | `.claude-plugin/plugin.json` |
+| 2026-10-31 | MCP server `bundle` no longer starts with the plugin: `.mcp.json` moved to `servers/mcp.json` (the e2e test and CI read it from there). Claude Code already has Read/Grep, so the server only added a process per session. To re-enable it, move the file back to the plugin root | `servers/mcp.json`, `tests/test_okf_mcp_e2e.py`, `.github/workflows/ci.yml` |
+| 2026-10-31 | Version `0.12.0-edv.2` | `.claude-plugin/plugin.json` |
