@@ -17,6 +17,19 @@ specification is (c) Google LLC under Apache 2.0.
 - `upstream`: the original, fetch only. Bring changes in with `git fetch upstream` and a merge or
   cherry-pick, reviewed like any other change.
 
+## Tests (no CI on this fork)
+
+GitHub Actions are not enabled on this fork, so nothing runs on push. Before pushing, run:
+
+```bash
+for test_file in tests/test_okf_*.py; do uv run "$test_file" || exit 1; done
+uvx ruff@0.16.10 check .
+claude plugin validate .
+```
+
+Enable Actions only when merging a large upstream change; if you do, disable the `release` and
+`Dependabot auto-merge` workflows first (they only make sense in the upstream repo).
+
 ## Versioning
 
 `plugin.json` carries the upstream version plus `-edv.<n>`, e.g. `0.12.0-edv.1`. Bump `<n>` on every
